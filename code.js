@@ -1,28 +1,53 @@
 // Your Code Here!
 
+//find movies data titles matching movieDetails data titles
+const moviesTitlesMatchingDetailsTitles = movieDetails.map(detail => movies.find(movieCopy => movieCopy.title === detail.title)).filter(title => title !== undefined)
 
+// create a deep copy of moviesTitlesMatchingDetailsTitles
+let combinedData = []
 
-const detailsTitlesMatchingMovies = movies.map(movie => movieDetails.find(detail => detail.title === movie.title))
-const moviesTitlesMatchingDetailsTitles = movieDetails.map(detail => movies.find(movie => movie.title === detail.title))
+const createMatchedDataCopy = function (data) {
 
-const matchingWithoutUndefined = [...moviesTitlesMatchingDetailsTitles, ...detailsTitlesMatchingMovies].filter(title => title !== undefined)
+    for (let dataElement of data) {
+        let matchingDataCopy = {}
+        let dataElementKeys = Object.keys(dataElement)
 
+        for (let dataElementKey of dataElementKeys) {
+            matchingDataCopy[dataElementKey] = dataElement[dataElementKey]
 
+            if (combinedData[combinedData.length - 1] !== matchingDataCopy) {
+                combinedData.push(matchingDataCopy)
+            }
+        }
+    }
+}
 
-// for (let movie of movies){
-//     for (let matchingMovie of detailsTitlesMatchingMovies){
+createMatchedDataCopy(moviesTitlesMatchingDetailsTitles)
 
-//         if(movie.title === matchingMovie){
-//             console.log(movie)
-//         }
-//     }
-// }
+// combine datas to get all movies informations setted in different objects
+const combineDatasFunction = function () {
 
+    for (let movie of combinedData) {
+        const movieTitle = movie.title
 
-// for(let item of detailsTitlesMatchingMovies){
-//     console.log(item.title)
-// }
+        for (let detail of movieDetails) {
 
+            const detailTitle = detail.title
+            const matchingKeys = Object.keys(detail)
+
+            if (movieTitle === detailTitle) {
+
+                matchingKeys.forEach(key => {
+                    movie[key] = detail[key]
+                })
+            }
+        }
+    }
+}
+
+combineDatasFunction()
+
+// displaying searching part of the page and title
 function displaySearchContainer() {
     document.body.textContent = ''
     const searchMoviesContainer = document.createElement('div')
@@ -46,93 +71,46 @@ function displaySearchContainer() {
 
 displaySearchContainer()
 
+
+// display all movies by clicking the seach button
 const submitButton = document.querySelector('button');
 
 submitButton.addEventListener('click', () => {
-    const moviesTitleValue = document.getElementById("moviesTitleId").value
-    const actorOrActressName = document.getElementById('actorsNameId').value
-
-    console.log(moviesTitleValue, actorOrActressName)
-
+   
+    displayMovies()
 })
 
 
+// display movies function
 function displayMovies() {
 
     const moviesContainer = document.createElement('div')
     moviesContainer.setAttribute('class', 'movies-container')
 
-    let resultCastMembers
-    let resultYear
-    let imageSource
-    let resultTitle
-    let resultGenres
+    for (let film of combinedData) {
 
-    for (let film of matchingWithoutUndefined) {
+        // create nodes
+        let movieCard = document.createElement('div')
+        movieCard.setAttribute('class', 'movie-card')
 
-        resultTitle = film.title
-        
+        let titleNode = document.createElement('h3')
+        let castMembersNode = document.createElement('p')
+        let genresNode = document.createElement('p')
+        let yearNode = document.createElement('p')
+        let popularityNode = document.createElement('h4')
+        let imageNode = document.createElement('img')
 
-        if (resultTitle === film.title) {
+        // add contents to nodes
+        imageNode.src = film.imageUrl
+        titleNode.innerText = film.title
+        castMembersNode.innerText = film.cast
+        genresNode.innerText = film.genres
+        yearNode.innerText = film.year
+        popularityNode.innerText = `Popularity: ${film.popularity}`
 
-            if (resultTitle === film.title && film.cast && film.year && film.genres) {
-                resultCastMembers = film.cast
-                resultYear = film.year
-                resultGenres = film.genres
-
-            } else if (film.imageUrl) {
-                imageSource = film.imageUrl
-
-            } 
-
-
-
-        }
-
-
-
-
-        // if (resultTitle === film.title && film.imageUrl) {
-
-        //     imageSource = film.imageUrl
-
-        // }
-
-        // if (resultTitle === film.title && film.cast && film.year && film.genres) {
-
-        //     resultCastMembers = film.cast
-        //     resultYear = film.year
-        //     resultGenres = film.genres
-        // }
-
-        if (resultTitle && resultCastMembers && resultGenres && imageSource && resultYear) {
-
-            let movieCard = document.createElement('div')
-            movieCard.setAttribute('class', 'movie-card')
-
-            let titleNode = document.createElement('h4')
-            let castMembersNode = document.createElement('p')
-            let genresNode = document.createElement('p')
-            let yearNode = document.createElement('p')
-            let imageNode = document.createElement('img')
-
-            // add contents to nodes
-            imageNode.src = imageSource
-            titleNode.innerText = resultTitle
-            castMembersNode.innerText = resultCastMembers
-            genresNode.innerText = resultGenres
-            yearNode.innerText = resultYear
-
-
-            // showing up on the screen
-            movieCard.append(imageNode, titleNode, castMembersNode, yearNode, genresNode)
-            moviesContainer.append(movieCard)
-            document.body.append(moviesContainer)
-        }
-
+        // showing up on the screen
+        movieCard.append(imageNode, titleNode, castMembersNode, yearNode, genresNode, popularityNode)
+        moviesContainer.append(movieCard)
+        document.body.append(moviesContainer)
     }
 }
-displayMovies()
-// console.log(detailsTitlesMatchingMovies)
-
-console.log(matchingWithoutUndefined[matchingWithoutUndefined.length -1])
