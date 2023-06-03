@@ -26,7 +26,7 @@ label{
 
 .movie-card{
     width: 300px;
-    height: 500px;
+    height: 520px;
     padding-top: 10px;
     padding-bottom: 10px;
     border: 1px solid black;
@@ -40,14 +40,15 @@ img{
 
 p{
     font-size: 16px;
-    margin-bottom: 20px;
+    margin-top: 0;
+
 }
+
+/* p:last-of-type{
+    margin-top: 0;
+    padding: 0;
+} */
 
 h5{
     text-transform: capitalize;
-}
-
-.movies-container::after{
-    content: '';
-    width: 620px;
 }
