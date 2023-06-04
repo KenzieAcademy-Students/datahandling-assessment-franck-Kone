@@ -1,16 +1,13 @@
 // Your Code Here!
 
 // Step One - Combine the two data sets
+const moviesContainer = document.createElement('div')
 
 //find movies data titles matching movieDetails data titles
 const moviesTitlesMatchingDetailsTitles = movieDetails.map(detail => movies.find(movieCopy => movieCopy.title === detail.title)).filter(title => title !== undefined)
 
 // create a deep copy of moviesTitlesMatchingDetailsTitles
 let combinedData = []
-const moviesContainer = document.createElement('div')
-let moviesByInputResult = []
-
-
 
 const createMatchedDataCopy = function (data) {
 
@@ -21,6 +18,7 @@ const createMatchedDataCopy = function (data) {
         for (let dataElementKey of dataElementKeys) {
             matchingDataCopy[dataElementKey] = dataElement[dataElementKey]
 
+            // that method evoid to push the same movie to combinedData 
             if (combinedData[combinedData.length - 1] !== matchingDataCopy) {
                 combinedData.push(matchingDataCopy)
             }
@@ -30,7 +28,7 @@ const createMatchedDataCopy = function (data) {
 
 createMatchedDataCopy(moviesTitlesMatchingDetailsTitles)
 
-// combine datas to get all movies informations setted in different objects
+// combine datas to get all movies informations setting in different objects
 const combineDatasFunction = function () {
 
     for (let movie of combinedData) {
@@ -68,7 +66,7 @@ function displaySearchContainer() {
     const searchByActors = `<label for="actorsNameId">Search by Actor/Actress: <input type = "text" id ="actorsNameId" name = "actorsName" placeholder = "Enter an actor name" autocomplete = "off"></label>`
     const submitButton = `<button>Search</button>`
 
-    searchMoviesContainer.innerHTML += searchByMoviesTitle
+    searchMoviesContainer.innerHTML = searchByMoviesTitle
     searchMoviesContainer.innerHTML += searchByActors
     searchMoviesContainer.innerHTML += submitButton
 
@@ -80,189 +78,114 @@ displaySearchContainer()
 
 const submitButton = document.querySelector('button');
 
-// display all movies by clicking the seach button
-
+// display all movies by clicking the search button
 submitButton.addEventListener('click', () => {
 
     moviesContainer.textContent = ''
     document.getElementById('actorsNameId').value = ''
     document.getElementById('movieTitleId').value = ''
-    moviesByInputResult = []
+    
     displayMovies()
 })
-
 
 // display movies function
 function displayMovies() {
 
-    moviesContainer.setAttribute('class', 'movies-container')
-
     for (let film of combinedData) {
 
-        // create nodes
-        let movieCard = document.createElement('div')
-        movieCard.setAttribute('class', 'movie-card')
-
-        let titleNode = document.createElement('h3')
-        let castMembersNode = document.createElement('p')
-        let genresNode = document.createElement('p')
-        let yearNode = document.createElement('p')
-        let popularityNode = document.createElement('p')
-        let imageNode = document.createElement('img')
-
-        // add contents to nodes
-        imageNode.src = film.imageUrl
-        titleNode.innerText = `Title: ${film.title}`
-        castMembersNode.innerText = film.cast
-        genresNode.innerHTML = `<strong>genres:</strong> ${film.genres}`
-        yearNode.innerHTML = `<strong>Year:</strong> ${film.year}`
-        popularityNode.innerHTML = `<strong>Popularity:</strong> ${film.popularity}`
-
-        // showing up on the screen
-        movieCard.append(imageNode, titleNode, castMembersNode, yearNode, genresNode, popularityNode)
-        moviesContainer.append(movieCard)
-        document.body.append(moviesContainer)
+       createMoviesNodes(film)
     }
 }
 
+// i particulary created this function cause codes inside of it was repeated more than once in functions, so creating it was necessary to prevent repetition
+function createMoviesNodes(aMovie){
+
+    moviesContainer.setAttribute('class', 'movies-container')
+
+    // create nodes
+    let movieCard = document.createElement('div')
+    movieCard.setAttribute('class', 'movie-card')
+
+    let titleNode = document.createElement('h3')
+    let castMembersNode = document.createElement('p')
+    let genresNode = document.createElement('p')
+    let yearNode = document.createElement('p')
+    let popularityNode = document.createElement('p')
+    let imageNode = document.createElement('img')
+
+    // add contents to nodes
+    imageNode.src = aMovie.imageUrl
+    titleNode.innerText = `Title: ${aMovie.title}`
+    castMembersNode.innerText = aMovie.cast
+    genresNode.innerHTML = `<strong>genres:</strong> ${aMovie.genres}`
+    yearNode.innerHTML = `<strong>Year:</strong> ${aMovie.year}`
+    popularityNode.innerHTML = `<strong>Popularity:</strong> ${aMovie.popularity}`
+
+    // showing up on the screen
+    movieCard.append(imageNode, titleNode, castMembersNode, yearNode, genresNode, popularityNode)
+    moviesContainer.append(movieCard)
+    document.body.append(moviesContainer)
+
+}
 
 
 // Step Three - Searching through movies
 
-document.body.addEventListener('input', (event) => {
+document.body.addEventListener('input', () => {
 
     const actorsInput = document.getElementById('actorsNameId')
     const titleInput = document.getElementById('movieTitleId')
     const moviesContainer = document.querySelector('.movies-container')
+    let moviesByInputResult = []
 
+    combinedData.forEach(movie => {
 
-    // setTimeout(() => {
-        if (event){
-            combinedData.forEach(movie => {
+        let actorsOfMovie = movie.cast.join('')
+        let titleOfMovie = movie.title
 
-                let actorsOfMovie = movie.cast.join('')
-                let titleOfMovie = movie.title
+        if (actorsInput.value && !titleInput.value){
 
-                if ((actorsOfMovie.toLowerCase().indexOf(actorsInput.value.toLowerCase()) > -1) && !titleInput.value) {
+            if (actorsOfMovie.toLowerCase().indexOf(actorsInput.value.toLowerCase()) > -1) {
+                moviesByInputResult.push(movie)
+            }
+        } else if (!actorsInput.value && titleInput.value) {
 
-                    moviesByInputResult.push(movie)
-                    console.log('le')
-                } else if (titleOfMovie.toLowerCase().indexOf(titleInput.value.toLowerCase() > -1) && !actorsInput.value) {
+            if (titleOfMovie.toLowerCase().indexOf(titleInput.value.toLowerCase()) > -1) {
+                moviesByInputResult.push(movie)
 
-                    moviesByInputResult.push(movie)
-                    console.log('la')
+            }
+        } else if (actorsInput.value && titleInput.value) {
 
-                } else if ((actorsOfMovie.toLowerCase().indexOf(actorsInput.value.toLowerCase()) > -1) && titleOfMovie.toLowerCase().indexOf(titleInput.value.toLowerCase() > -1) && actorsInput.value && titleInput.value) {
-                    moviesByInputResult.push(movie)
-                    console.log('il')
+            if (actorsOfMovie.toLowerCase().indexOf(actorsInput.value.toLowerCase()) > -1 && titleOfMovie.toLowerCase().indexOf(titleInput.value.toLowerCase()) > -1) {
+                moviesByInputResult.push(movie)
 
-                }
-
-                if (actorsInput.value === '' && titleInput.value === '') {
-                    moviesContainer.textContent = ''
-                    moviesByInputResult = []
-                }
-            })
-
-
-            moviesByInputResult.forEach(movieFound => {
-
-                if (moviesContainer.childElementCount > moviesByInputResult.length) {
-                    moviesContainer.textContent = ''
-                }
-
-                // create nodes
-                let movieCard = document.createElement('div')
-                movieCard.setAttribute('class', 'movie-card')
-
-                let titleNode = document.createElement('h3')
-                let castMembersNode = document.createElement('p')
-                let genresNode = document.createElement('p')
-                let yearNode = document.createElement('p')
-                let popularityNode = document.createElement('h4')
-                let imageNode = document.createElement('img')
-
-                // add contents to nodes
-                imageNode.src = movieFound.imageUrl
-                titleNode.innerText = `Title: ${movieFound.title}`
-                castMembersNode.innerText = movieFound.cast
-                genresNode.innerText = `genres: ${movieFound.genres}`
-                yearNode.innerText = `Year: ${movieFound.year}`
-                popularityNode.innerText = `Popularity: ${movieFound.popularity}`
-
-                // showing up on the screen
-                movieCard.append(imageNode, titleNode, castMembersNode, yearNode, genresNode, popularityNode)
-                moviesContainer.append(movieCard)
-            })
+            }
         }
-        
-    // }, 1000)
 
+        // to clean up the screen when using backspace to make actors and title inputs be empty
+        if (actorsInput.value === '' && titleInput.value === '') {
 
-    // combinedData.forEach(movie => {
+            moviesContainer.textContent = ''
+            moviesByInputResult = []
+        }
+    })
 
-    //     let actorsOfMovie = movie.cast.join('')
-    //     let titleOfMovie = movie.title
+    // to only show up the single movie matching the title and actors input 
+    if (moviesByInputResult.length === 1) {
 
-    //     if ((actorsOfMovie.toLowerCase().indexOf(actorsInput.value.toLowerCase()) > -1) && !titleInput.value){
+        moviesContainer.textContent = ''
+        createMoviesNodes(moviesByInputResult[0])
+    } else {
 
+        // to show up all movies when matching more than a movie
+        moviesByInputResult.forEach(movieFound => {
 
-
-    //         moviesByInputResult.push(movie)
-    //         console.log('le')
-
-    //     } else if (titleOfMovie.toLowerCase().indexOf(titleInput.value.toLowerCase() > -1) && !actorsInput.value){
-
-
-    //         moviesByInputResult.push(movie)
-    //         console.log('la')
-
-
-    //     } else if ((actorsOfMovie.toLowerCase().indexOf(actorsInput.value.toLowerCase()) > -1) && titleOfMovie.toLowerCase().indexOf(titleInput.value.toLowerCase() > -1) && actorsInput.value && titleInput.value){
-
-
-
-    //         moviesByInputResult.push(movie)
-    //         console.log('il')
-
-    //     }
-
-    //     if (actorsInput.value === '' && titleInput.value === '') {
-    //         moviesContainer.textContent = ''
-    //         moviesByInputResult = []
-    //     }
-    // })
-
-    // moviesByInputResult.forEach(movieFound => {
-
-    //     if (moviesContainer.childElementCount > moviesByInputResult.length) {
-    //         moviesContainer.textContent = ''
-    //     }
-
-    //     // create nodes
-    //     let movieCard = document.createElement('div')
-    //     movieCard.setAttribute('class', 'movie-card')
-
-    //     let titleNode = document.createElement('h3')
-    //     let castMembersNode = document.createElement('p')
-    //     let genresNode = document.createElement('p')
-    //     let yearNode = document.createElement('p')
-    //     let popularityNode = document.createElement('h4')
-    //     let imageNode = document.createElement('img')
-
-    //     // add contents to nodes
-    //     imageNode.src = movieFound.imageUrl
-    //     titleNode.innerText = `Title: ${movieFound.title}`
-    //     castMembersNode.innerText = movieFound.cast
-    //     genresNode.innerText = `genres: ${movieFound.genres}`
-    //     yearNode.innerText = `Year: ${movieFound.year}`
-    //     popularityNode.innerText = `Popularity: ${movieFound.popularity}`
-
-    //     // showing up on the screen
-    //     movieCard.append(imageNode, titleNode, castMembersNode, yearNode, genresNode, popularityNode)
-    //     moviesContainer.append(movieCard)
-    // })
-
+            // this if statement is set to 
+            if (moviesContainer.childElementCount > moviesByInputResult.length) {
+                moviesContainer.textContent = ''
+            }
+          
+            createMoviesNodes(movieFound)
+        })
+    }
 })
-
-console.log(combinedData)
