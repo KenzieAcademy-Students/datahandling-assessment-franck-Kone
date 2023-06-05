@@ -3,53 +3,13 @@
 // Step One - Combine the two data sets
 const moviesContainer = document.createElement('div')
 
-//find movies data titles matching movieDetails data titles
-const moviesTitlesMatchingDetailsTitles = movieDetails.map(detail => movies.find(movieCopy => movieCopy.title === detail.title)).filter(title => title !== undefined)
+const combinedDatas = movieDetails.map(movieDetail => {
 
-// create a deep copy of moviesTitlesMatchingDetailsTitles
-let combinedData = []
+    const matchedMovie = movies.find(movie => movie.title === movieDetail.title)
 
-const createMatchedDataCopy = function (data) {
+    return { ...matchedMovie, ...movieDetail }
+})
 
-    for (let dataElement of data) {
-        let matchingDataCopy = {}
-        let dataElementKeys = Object.keys(dataElement)
-
-        for (let dataElementKey of dataElementKeys) {
-            matchingDataCopy[dataElementKey] = dataElement[dataElementKey]
-
-            // that method evoid to push the same movie to combinedData 
-            if (combinedData[combinedData.length - 1] !== matchingDataCopy) {
-                combinedData.push(matchingDataCopy)
-            }
-        }
-    }
-}
-
-createMatchedDataCopy(moviesTitlesMatchingDetailsTitles)
-
-// combine datas to get all movies informations setting in different objects
-const combineDatasFunction = function () {
-
-    for (let movie of combinedData) {
-        const movieTitle = movie.title
-
-        for (let detail of movieDetails) {
-
-            const detailTitle = detail.title
-            const matchingKeys = Object.keys(detail)
-
-            if (movieTitle === detailTitle) {
-
-                matchingKeys.forEach(key => {
-                    movie[key] = detail[key]
-                })
-            }
-        }
-    }
-}
-
-combineDatasFunction()
 
 // Step Two - Render the movies
 
@@ -84,21 +44,21 @@ submitButton.addEventListener('click', () => {
     moviesContainer.textContent = ''
     document.getElementById('actorsNameId').value = ''
     document.getElementById('movieTitleId').value = ''
-    
+
     displayMovies()
 })
 
 // display movies function
 function displayMovies() {
 
-    for (let film of combinedData) {
+    for (let film of combinedDatas) {
 
-       createMoviesNodes(film)
+        createMoviesNodes(film)
     }
 }
 
 // i particulary created this function cause codes inside of it was repeated more than once in functions, so creating it was necessary to prevent repetition
-function createMoviesNodes(aMovie){
+function createMoviesNodes(aMovie) {
 
     moviesContainer.setAttribute('class', 'movies-container')
 
@@ -125,7 +85,6 @@ function createMoviesNodes(aMovie){
     movieCard.append(imageNode, titleNode, castMembersNode, yearNode, genresNode, popularityNode)
     moviesContainer.append(movieCard)
     document.body.append(moviesContainer)
-
 }
 
 
@@ -138,12 +97,12 @@ document.body.addEventListener('input', () => {
     const moviesContainer = document.querySelector('.movies-container')
     let moviesByInputResult = []
 
-    combinedData.forEach(movie => {
+    combinedDatas.forEach(movie => {
 
         let actorsOfMovie = movie.cast.join('')
         let titleOfMovie = movie.title
 
-        if (actorsInput.value && !titleInput.value){
+        if (actorsInput.value && !titleInput.value) {
 
             if (actorsOfMovie.toLowerCase().indexOf(actorsInput.value.toLowerCase()) > -1) {
                 moviesByInputResult.push(movie)
@@ -184,7 +143,7 @@ document.body.addEventListener('input', () => {
             if (moviesContainer.childElementCount > moviesByInputResult.length) {
                 moviesContainer.textContent = ''
             }
-          
+
             createMoviesNodes(movieFound)
         })
     }
