@@ -1,1 +1,39 @@
 /* Write your CSS Here. */
+
+label{
+    display: block;
+    margin: 20px auto;
+}
+
+.movies-container{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+    gap: 15px;
+    margin: 20px auto;
+}
+
+.movie-card{
+    width: 300px;
+    height: 520px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border: 1px solid black;
+}
+
+img{
+    width: 200px;
+    height: 250px;
+    object-fit: cover;
+}
+
+p{
+    font-size: 16px;
+    margin-top: 0;
+
+}
+
+h5{
+    text-transform: capitalize;
+}
